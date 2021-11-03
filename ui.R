@@ -62,13 +62,20 @@ ui <- dashboardPage(
       # Taxation
       # TODO: Change these
       # to sliders.
-      checkboxGroupInput(
-        inputId = "tax",
-        label   = "Taxation:",
-        choices = c(
-          "Lump sump" = "lumpsum",
-          "Unit Tax"  = "vat"
-        )
+      sliderInput(
+        inputId = "lumpsump_tax",
+        label = "Lump Sump",
+        min = 0,
+        max = 10,
+        value = 0,ticks = FALSE
+      ),
+      
+      sliderInput(
+        inputId = "unit_tax",
+        label = "VAT",
+        min = 0,
+        max = 1,
+        value = 0,ticks = FALSE
       ),
       
       # Shock

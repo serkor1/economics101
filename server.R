@@ -31,9 +31,12 @@ server <- function(input, output, session) {
       
     }
     
-    supply_function(
+    linear_function(
       shock = shock,
-      coeff = as.numeric(input$supply_elasticity)
+      coeff = as.numeric(input$supply_elasticity),
+      type = "supply",
+      vat = as.numeric(input$unit_tax),
+      lump_sump = as.numeric(input$lumpsump_tax) 
     )
     
     
@@ -57,10 +60,12 @@ server <- function(input, output, session) {
       
     }
     
-    demand_function(
+    linear_function(
       shock = shock,
       coeff = as.numeric(input$demand_elasticity),
-      tax = input$tax
+      vat = as.numeric(input$unit_tax),
+      lump_sump = as.numeric(input$lumpsump_tax),
+      type = "demand"
     )
     
     
@@ -75,9 +80,9 @@ server <- function(input, output, session) {
   
   # Baseline Plot
   output$baseline_sd <- renderPlotly(
-      equilibrium_plot(
-        demand = demand_function(coeff = as.numeric(input$demand_elasticity)),
-        supply = supply_function(coeff = as.numeric(input$supply_elasticity)),
+      temp_plot(
+        demand = linear_function(coeff = as.numeric(input$demand_elasticity),type = "demand"),
+        supply = linear_function(coeff = as.numeric(input$supply_elasticity), type = "supply"),
         advanced = input$is_adv
       )
     )
@@ -86,7 +91,7 @@ server <- function(input, output, session) {
   output$complex_sd <- renderPlotly({
     
 
-    equilibrium_plot(
+    temp_plot(
       demand = demand(),
       supply = supply(),
       advanced = input$is_adv
@@ -100,22 +105,22 @@ server <- function(input, output, session) {
   
   
   output$baseline_table <- renderTable({
-    
+
     stat_table(
-      demand = demand_function(coeff = as.numeric(input$demand_elasticity)),
-      supply = supply_function(coeff = as.numeric(input$supply_elasticity)),
+      demand = linear_function(coeff = as.numeric(input$demand_elasticity),type = "demand"),
+      supply = linear_function(coeff = as.numeric(input$supply_elasticity),type = "supply"),
       advanced = input$is_adv
     ) %>% mutate(
       Measure = str_replace(Measure, pattern = "_", replacement = " ") %>% str_to_title()
     )
-    
-    
+
+
   },width = "100%",bordered = TRUE, rownames = FALSE)
-  
-  
-  
+
+
+
   output$complex_table <- renderTable({
-    
+
     stat_table(
       demand = demand(),
       supply = supply(),
@@ -123,8 +128,8 @@ server <- function(input, output, session) {
     ) %>% mutate(
       Measure = str_replace(Measure, pattern = "_", replacement = " ") %>% str_to_title()
     )
-    
-    
+
+
   },width = "100%",bordered = TRUE, rownames = FALSE)
   
   

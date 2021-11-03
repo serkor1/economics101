@@ -5,357 +5,300 @@
 # Calculate Intersections; ####
 
 
-intersection_function <- function(curve_1, curve_2) {
+intersection_function <- function(demand, supply) {
   
-  # This function takes two
-  # lists of curves in order to calculate
-  # the intersection between the two.
-  # each curve is represented as a tibble
-  # of X- and Y-values
-  x_val <- curve_1$x
-  
-  
-  curve_1 <- approxfun(
-    x = curve_1$x,
-    y = curve_1$y,
+  # Original Functions; 
+  og_demand <- approxfun(
+    x = demand["x"] %>% pull(),
+    y = demand["y_initial"] %>% pull(),
     rule = 2
   )
   
-  curve_2 <- approxfun(
-    x = curve_2$x,
-    y = curve_2$y,
+  
+  og_supply <- approxfun(
+    x = supply["x"] %>% pull(),
+    y = supply["y_initial"] %>% pull(),
+    rule = 2
+  )
+  
+  
+  
+    
+    curve_1_var = "y_initial"
+    curve_2_var= "y_initial"
+    
+    if (ncol(demand) > 3) {
+      
+      curve_1_var <- "y_intervention"
+      
+    }
+    
+    if (ncol(supply) > 3) {
+      curve_2_var= "y_intervention"
+    }
+    
+  
+  
+  
+  # Perfect Equilibrium; ####
+  x_val <- demand$x
+  
+  
+    demand <- approxfun(
+    x = demand["x"] %>% pull(),
+    y = demand[curve_1_var] %>% pull(),
+    rule = 2
+  )
+  
+    supply <- approxfun(
+    x = supply["x"]%>% pull(),
+    y = supply[curve_2_var]%>% pull(),
     rule = 2
   )
   
   
   # Calculate Intersections; 
   x_int <- uniroot(
-    function(x) curve_1(x) - curve_2(x),
+    function(x) demand(x) - supply(x),
     c(min(x_val), max(x_val)))$root
   
   
-  return(
-    tibble(
-      x_int = x_int,
-      y_int = curve_2(x_int)
-    )
+  
+  tibble(
+    x_int = x_int,
+    y_int = demand(x_int)
   )
   
-  
 }
+
+
 
 
 # Supply and Demand Functions; ####
 
 
-# Demand function;
-demand_function <- function(shock = NULL, coeff = 2, tax = NULL) {
+linear_function <- function(shock = NULL, coeff = 2, vat = 0, lump_sump = 0, type = "demand") {
   
-  # TODO: Change the flow
-  # so it doesnt overwrite itself.
+  # For all values there is an initial 
+  # state which is expressed here
+  x <- seq(from = 0, to = 10, length.out = 200)
   
-  x = seq(from = 0, to = 10, length.out = 100)
-  y = -coeff * x + 20
-  
-  if (!is.null(tax)) {
+  if (type == "demand") {
     
-    # If the Tax is not null
-    # it is eitehr lumpsump
-    # or advalorem
-    # TODO: What were the correct
-    # terminonology here
-    if (tax == "vat") {
-      
-      y = -(coeff * 0.75) * x + 20
-      
-      
-    }
-    
+    y_initial <- -coeff * x + 20
     
   } else {
     
-    
-    y = -coeff * x + 20
-    
+    y_initial <- coeff * x
     
   }
   
   
   
+  # Determine if there is some form of taxation
+  # we always tax the demand
+  if (type == "demand") {
+    
+      y_intervention <- - (coeff * (1+vat)) * x + 20 - lump_sump
+
+    
+  } else {
+    
+    y_intervention <- y_initial
+  
+    }
   
   
   
+  
+  # Add Shock
   if (!is.null(shock)) {
     
-    y_old = y
     
     if (shock == "pos") {
       
-      y = y + 5
+      y_intervention = y_intervention + 5
       
     } else {
       
-      y = y - 5
+      y_intervention = y_intervention - 5
     }
-    
-    
-    data <- tibble(
-      x = x,
-      y_old = y_old,
-      y = y
-    )
-    
-    
-  } else {
-    
-    data <-  tibble(
-      x = x,
-      y = y
-    )
-    
-  }
-  
-  
-  data <- data %>% filter(
-    !(across(y) < 0)
-  )
-  
-  return(
-    data
-  )
-}
-
-
-
-
-
-supply_function <- function(shock = NULL, coeff = 2) {
-  
-  x = seq(from = 0, to = 10, length.out = 100)
-  y = coeff * x
-  
-  
-  if (!is.null(shock)) {
-    
-    print("Shock Supoply")
-    
-    y_old = y
-    
-    if (shock == "pos") {
-      
-      y = y - 5
-      
-    } else {
-      
-      y = y + 5
-    }
-    
-    
-    data <- tibble(
-      x = x,
-      y_old = y_old,
-      y = y
-    )
-    
-    
-  } else {
-    
-    print("Else")
-    
-    data <-  tibble(
-      x = x,
-      y = y
-    )
     
   }
   
   
   
-  
-  
-  data <-  data %>% filter(
-    !(across(y) > 20)
+  # Convert to Tibble;
+  data <- tibble(
+    x = x,
+    y_initial = y_initial,
+    y_intervention = y_intervention
+  ) %>% filter(
+    !across(
+      .cols = contains("y")
+    ) > 20 | !across(
+      .cols = contains("y")
+    ) < 0
   )
+  
+  
+  # Check for equality
+  condition <- setequal(
+    data$y_initial,
+    data$y_intervention
+  )
+  
+  
+  if (isTRUE(condition)) {
+    
+    data <- data %>% select(
+      "x",
+      "y_initial"
+    )
+    
+    
+    
+  }
   
   return(
-    data
+    data  %>% mutate(
+      type = str_to_title(type)
+    )
   )
+  
 }
+
+
 
 
 
 # Equilibrium Plots; ####
 
 
+temp_plot <- function(demand, supply, advanced) {
 
-
-
-equilibrium_plot <- function(demand, supply, advanced) {
-  
-  
   # Demand Curve
   demand_curve <- demand
   supply_curve <- supply
   
   
-  # Remove Everything 
-  
-  
-  
-  
   # Original Intersections;
   # between the initial values
   intersection <- intersection_function(
-    curve_1 = demand_curve,
-    curve_2 = supply_curve
+    demand = demand_curve,
+    supply =  supply_curve
   )
   
+  # Initialize the base plot
+  # so it will fit into the
+  # if statements
   
-  
-  base_plot <- plot_ly(
-    data = supply_curve
-  ) %>% add_lines(
+  base_plot <- bind_rows(
+    x = demand_curve,
+    y = supply_curve
+  ) %>% plot_ly(color = ~type,colors = "Blues") %>% add_lines(
     x = ~x,
-    y = ~y,
-    line = list(
-      color = "steelblue"
-    ),
-    name = "Supply"
-  ) %>% add_lines(
-    inherit = FALSE,
-    data    = demand_curve,
-    x = ~x,
-    y = ~y,
-    line = list(
-      color = "darkred"
-    ),
-    name = "Demand"
+    y = ~y_initial
   )
   
-  
-  # If we add a Shock/Tax to either side
-  # there will be three variables instead of two.
-  # In any case there is a movement.
-  if (ncol(demand_curve)>2){
+
+  if (ncol(demand_curve) > 3 | ncol(supply_curve) > 3) {
     
     
-    
-    base_plot <- base_plot %>% 
-      add_lines(
-        inherit = TRUE,
-        data    = demand_curve,
-        x       = ~x,
-        y       = ~y_old,
-        line = list(
-          color = "darkred",
-          dash  = "dot"
-        ),
-        name = "Demand"
+    base_plot <- base_plot %>% add_lines(
+      x = ~x,
+      y = ~y_intervention,
+      line = list(
+        dash = "dash"
       )
-    
-    
-  }
-  
-  if (ncol(supply_curve)>2){
-    
-    
-    
-    base_plot <- base_plot %>% 
-      add_lines(
-        inherit = TRUE,
-        data    = supply_curve,
-        x       = ~x,
-        y = ~ y_old,
-        line = list(
-          color = "steelblue",
-          dash  = "dot"
-        ),
-        name = "Supply"
-      )
-    
-    
+    ) 
   }
   
   
-  
-  ribbon_demand <- demand_curve %>% filter(x <= intersection$x_int)
-  ribbon_supply <- supply_curve %>% filter(x <= intersection$x_int)
-  
-  base_plot <- base_plot %>% add_segments(
-    x = 0,
-    y = intersection$y_int ,
-    xend = intersection$x_int,
-    yend = intersection$y_int,
-    line = list(
-      color = "gray",
-      dash  = "dot"
-    ),
-    showlegend = FALSE
-  ) %>% add_segments(
-    x = intersection$x_int,
-    y = 0,
-    xend = intersection$x_int,
-    yend = intersection$y_int,
-    line = list(
-      color = "gray",
-      dash = "dot"
-    ),
-    showlegend = FALSE
-  ) %>% layout(
+  base_plot <- base_plot %>% layout(
     xaxis = list(
-      range = c(0,10),
       title = "Quantity"
     ),
     yaxis = list(
-      range = c(0,30),
-      title = "Price"
+      title = "Price",
+      range = c(0,30)
     )
-  ) 
+  )
   
-  if (advanced) {
+  
+  
+  
+  
+  if (isTRUE(advanced)) {
     
     
-    # Add Consumer and
-    # producer Surplus
+    ribbon_demand <- demand_curve %>% 
+      filter(x <= intersection$x_int) %>% 
+      mutate(
+        type = "Consumer Surplus"
+        )
     
-    base_plot <- base_plot %>% add_ribbons(
-      x = ribbon_supply$x,
-      ymin = ribbon_supply$y,
-      ymax = intersection$y_int,
-      name = "Producer Surplus",
-      fillcolor = "steelblue",
-      opacity = 0.2
-    ) %>% add_ribbons(
-      x = ribbon_demand$x,
-      ymax = ribbon_demand$y,
-      ymin = intersection$y_int,
-      name = "Consumer Surplus",
-      fillcolor = "darkred",
-      opacity = 0.2
-    )
-    
-    
-    # Add Tax-revenue
+    ribbon_supply <- supply_curve %>% 
+      filter(x <= intersection$x_int) %>% 
+      mutate(
+        type = "Producer Surplus"
+        )
+
+      # Add Consumer and
+      # producer Surplus
+      
+    if (ncol(demand_curve) > 3 | ncol(supply_curve) > 3) {
+      
+     data <- bind_rows(
+       ribbon_demand,
+       ribbon_supply
+     ) %>% mutate(
+       y_intervention = coalesce(y_intervention,y_initial)
+     )
+      
+      base_plot <- base_plot %>% 
+        add_ribbons(
+          data = data,
+          x = ~x,
+          ymin = intersection$y_int,
+          ymax = ~y_intervention,
+          opacity = 0.5
+        )
+      
+
+    } else {
+      
+      base_plot <- base_plot %>% add_ribbons(
+        data = bind_rows(
+          ribbon_demand,
+          ribbon_supply
+        ),
+        x = ~x,
+        ymax = ~ y_initial,
+        ymin = intersection$y_int,
+        opacity = 0.5
+          )
+      
+      
+    }
+
+      
+
+
+      # Add Tax-revenue
+
     
     
   }
   
-  
-  
-  
   base_plot
   
-  
-  
-  
-  
-  
-  
-  
-  
+ 
   
   
 }
+
+
 
 # Stats table
 
@@ -364,14 +307,14 @@ stat_table <- function(supply, demand, advanced) {
   
   # Calculate the Intersection between the curves;
   intersections <- intersection_function(
-    curve_1 = supply,
-    curve_2 = demand
+    supply = supply,
+    demand = demand
   )
   
   
   # Calculate PS and CS
   producer_surplus <- ( intersections$y_int * intersections$x_int ) / 2
-  consumer_surplus <- (( max(demand$y) - intersections$y_int) * intersections$x_int) / 2
+  consumer_surplus <- (( max(demand$y_initial) - intersections$y_int) * intersections$x_int) / 2
   total_welfare <-  consumer_surplus + producer_surplus
   price <- intersections$y_int
   quantity <- intersections$x_int
@@ -413,8 +356,6 @@ stat_table <- function(supply, demand, advanced) {
   
   
 }
-
-
 
 
 
