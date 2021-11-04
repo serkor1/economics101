@@ -80,7 +80,7 @@ server <- function(input, output, session) {
   
   # Baseline Plot
   output$baseline_sd <- renderPlotly(
-      temp_plot(
+    equilibrium_plot(
         demand = linear_function(coeff = as.numeric(input$demand_elasticity),type = "demand"),
         supply = linear_function(coeff = as.numeric(input$supply_elasticity), type = "supply"),
         advanced = input$is_adv
@@ -91,7 +91,7 @@ server <- function(input, output, session) {
   output$complex_sd <- renderPlotly({
     
 
-    temp_plot(
+    equilibrium_plot(
       demand = demand(),
       supply = supply(),
       advanced = input$is_adv
@@ -104,33 +104,33 @@ server <- function(input, output, session) {
   
   
   
-  output$baseline_table <- renderTable({
-
-    stat_table(
-      demand = linear_function(coeff = as.numeric(input$demand_elasticity),type = "demand"),
-      supply = linear_function(coeff = as.numeric(input$supply_elasticity),type = "supply"),
-      advanced = input$is_adv
-    ) %>% mutate(
-      Measure = str_replace(Measure, pattern = "_", replacement = " ") %>% str_to_title()
-    )
-
-
-  },width = "100%",bordered = TRUE, rownames = FALSE)
-
-
-
-  output$complex_table <- renderTable({
-
-    stat_table(
-      demand = demand(),
-      supply = supply(),
-      advanced = input$is_adv
-    ) %>% mutate(
-      Measure = str_replace(Measure, pattern = "_", replacement = " ") %>% str_to_title()
-    )
-
-
-  },width = "100%",bordered = TRUE, rownames = FALSE)
+  # output$baseline_table <- renderTable({
+  # 
+  #   stat_table(
+  #     demand = linear_function(coeff = as.numeric(input$demand_elasticity),type = "demand"),
+  #     supply = linear_function(coeff = as.numeric(input$supply_elasticity),type = "supply"),
+  #     advanced = input$is_adv
+  #   ) %>% mutate(
+  #     Measure = str_replace(Measure, pattern = "_", replacement = " ") %>% str_to_title()
+  #   )
+  # 
+  # 
+  # },width = "100%",bordered = TRUE, rownames = FALSE)
+  # 
+  # 
+  # 
+  # output$complex_table <- renderTable({
+  # 
+  #   stat_table(
+  #     demand = demand(),
+  #     supply = supply(),
+  #     advanced = input$is_adv
+  #   ) %>% mutate(
+  #     Measure = str_replace(Measure, pattern = "_", replacement = " ") %>% str_to_title()
+  #   )
+  # 
+  # 
+  # },width = "100%",bordered = TRUE, rownames = FALSE)
   
   
 }

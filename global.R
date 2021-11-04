@@ -7,6 +7,14 @@ library(shinydashboard)
 library(tidyverse)
 library(plotly)
 
-source("scripts/functions.R")
+list.files(
+  path = "r/",full.names = TRUE
+) %>% map(
+  .f = function(x) {
+    
+    source(x)
+    
+  }
+)
 
 

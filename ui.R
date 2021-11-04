@@ -108,7 +108,7 @@ ui <- dashboardPage(
             p(
               "This is an interactive webapplication built under the GPL 2 license. Bugs, suggestions and errors can be submitted at the",
               a(href = "https://github.com/serkor1/economics101", "Github Repository."),
-              "If you are a Student at Niels Brock please contact me by mail."
+              "If you are a Student, or teacher, at Niels Brock please contact me by mail."
             )
             
             
