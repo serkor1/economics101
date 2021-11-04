@@ -96,6 +96,27 @@ ui <- dashboardPage(
       tabItem(
         tabName = "supdem",
         
+        column(
+          width = 12,
+          box(
+            title = "Information",
+            width = 12,
+            solidHeader = TRUE,
+            collapsible = TRUE,
+            collapsed = TRUE,status = "warning",
+            
+            p(
+              "This is an interactive webapplication built under the GPL 2 license. Bugs, suggestions and errors can be submitted at the",
+              a(href = "https://github.com/serkor1/economics101", "Github Repository."),
+              "If you are a Student at Niels Brock please contact me by mail."
+            )
+            
+            
+          )
+          
+        ),
+        
+        
         
         column(
           width = 12,
@@ -105,6 +126,8 @@ ui <- dashboardPage(
           box(
             title = "Perfect Competition",
             width = 6,
+            solidHeader = TRUE,
+            status = "primary",
             
             plotlyOutput(
               "baseline_sd"
@@ -122,6 +145,8 @@ ui <- dashboardPage(
           box(
             title = "Perfect Competition with Intervention",
             width = 6,
+            solidHeader = TRUE,
+            status = "primary",
             plotlyOutput(
               "complex_sd"
             ),

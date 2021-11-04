@@ -5,9 +5,9 @@ account: 101analytics
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4962135
-bundleId: 5208188
+bundleId: 5210846
 url: https://1903analytics.shinyapps.io/marketequilibrium/
-when: 1635956017.84532
-lastSyncTime: 1635956017.84535
+when: 1636001335.20664
+lastSyncTime: 1636001335.20664
 asMultiple: FALSE
 asStatic: FALSE
