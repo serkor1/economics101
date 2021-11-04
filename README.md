@@ -4,16 +4,16 @@
 
 #### Introduction
 
-The `linear_function()` is defined as $$ p = -\alpha (1+\tau)x + 20 - \Gamma $$ for the `demand`-function, and $$p=\beta x$$ for the `supply`-function.
+The `linear_function()` is defined as `p = -alpha (1+tau)x + 20 - gamma` for the `demand`-function, and `p=beta x` for the `supply`-function.
 
 
 #### Parameters
 
 Each parameter is directly controlled by the sliders in the following way:
 
-1. Demand and Supply elasticity defines $\alpha$ and $\beta$ respecively
-2. VAT controls the value of $\tau$ where $\tau \in ]0,1[$
-3. Lump Sump controls the $\Gamma$
+1. Demand and Supply elasticity defines `alpha` and `beta` respecively
+2. VAT controls the value of `tau` where `tau in ]0,1[`
+3. Lump Sump controls the `Gamma`
 
 #### Shock Parameters
 
