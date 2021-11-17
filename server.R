@@ -15,6 +15,8 @@
 server <- function(input, output, session) {
   
   
+  
+  
   # Generate Demand and Supply Functions
   supply <- reactive({
     

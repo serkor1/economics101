@@ -4,6 +4,7 @@ rm(list = ls()); gc()
 # Packages; ####
 library(shiny)
 library(shinydashboard)
+library(shinydashboardPlus)
 library(tidyverse)
 library(plotly)
 

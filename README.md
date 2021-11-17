@@ -28,10 +28,18 @@ The application currently supports calculating the following,
 3. Consumer Surplus
 4. Producer Surplus
 5. Total Welfare
+6. Tax Revenue
 
 
 #### Future Updates
 
 1. Price Controls
 2. Dead Weihgt Loss
-3. Tax Revenue
+
+
+#### Known Bugs
+
+1. If the user inputs `shocks` to either side, the plots will show y intersections for both functions, while it should 
+be only shown for the equilibrium
+
+

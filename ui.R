@@ -2,15 +2,38 @@
 
 
 
+
 ui <- dashboardPage(
-  dashboardHeader(
-    title = "Interactive Economics V1.0"),
-  dashboardSidebar(
+  header =  dashboardHeader(title = "Interactive Economics V1.0",
+                            
+                            
+                            
+                            tags$li(
+                              class = "dropdown",
+                              tags$a(
+                                img(
+                                  src = "GitHub-Mark-Light-32px.png",
+                                  height = "16px",
+                                  width = "16px"
+                                ),
+                                href = "https://github.com/serkor1/economics101",
+                                class = "my_class",
+                                "Github",
+                                target = "_blank"
+                                
+                              )
+                              
+                            )),
+  
+  sidebar =  dashboardSidebar(
+    minified = FALSE,
     sidebarMenu(
       id = "tabs",
       
       menuItem(
-        text = "Supply and Demand", tabName = "supdem", icon = icon("dashboard")
+        text = "Supply and Demand",
+        tabName = "supdem",
+        icon = icon("dashboard")
       ),
       
       
@@ -22,7 +45,8 @@ ui <- dashboardPage(
         min = 0.1,
         max = 5,
         animate = TRUE,
-        label = "Demand Elasticity",ticks = FALSE,
+        label = "Demand Elasticity",
+        ticks = FALSE,
         step = 0.1
       ),
       
@@ -32,7 +56,8 @@ ui <- dashboardPage(
         min = 0.1,
         max = 5,
         animate = TRUE,
-        label = "Supply Elasticity",ticks = FALSE,
+        label = "Supply Elasticity",
+        ticks = FALSE,
         step = 0.1
       ),
       
@@ -52,10 +77,9 @@ ui <- dashboardPage(
       checkboxGroupInput(
         inputId = "side",
         label   = "Choose Side:",
-        choices = c(
-          "Demand-side" = "d_side",
-          "Supply-side"  = "s_side"
-        ),inline = FALSE
+        choices = c("Demand-side" = "d_side",
+                    "Supply-side"  = "s_side"),
+        inline = FALSE
       ),
       
       
@@ -67,7 +91,8 @@ ui <- dashboardPage(
         label = "Lump Sump",
         min = 0,
         max = 10,
-        value = 0,ticks = FALSE
+        value = 0,
+        ticks = FALSE
       ),
       
       sliderInput(
@@ -75,94 +100,59 @@ ui <- dashboardPage(
         label = "VAT",
         min = 0,
         max = 1,
-        value = 0,ticks = FALSE
+        value = 0,
+        ticks = FALSE
       ),
       
       # Shock
       checkboxGroupInput(
         inputId = "shock",
         label   = "Shock:",
-        choices = c(
-          "Positive" = "pos",
-          "Negative"  = "neg"
-        )
+        choices = c("Positive" = "pos",
+                    "Negative"  = "neg")
       )
     )
   ),
   
   
-  dashboardBody(
-    tabItems(
-      tabItem(
-        tabName = "supdem",
+  body = dashboardBody(tabItems(tabItem(
+    tabName = "supdem",
+    
+    column(
+      width = 12,
+      
+      
+      
+      box(
+        title = "Perfect Competition",
+        width = 6,
+        solidHeader = TRUE,
+        status = "primary",
         
-        column(
-          width = 12,
-          box(
-            title = "Information",
-            width = 12,
-            solidHeader = TRUE,
-            collapsible = TRUE,
-            collapsed = TRUE,status = "warning",
-            
-            p(
-              "This is an interactive webapplication built under the GPL 2 license. Bugs, suggestions and errors can be submitted at the",
-              a(href = "https://github.com/serkor1/economics101", "Github Repository."),
-              "If you are a Student, or teacher, at Niels Brock please contact me by mail."
-            )
-            
-            
-          )
-          
-        ),
+        plotlyOutput("baseline_sd"),
+        
+        hr(),
+        
+        tableOutput("baseline_table")
         
         
+      ),
+      
+      box(
+        title = "Perfect Competition with Intervention",
+        width = 6,
+        solidHeader = TRUE,
+        status = "primary",
+        plotlyOutput("complex_sd"),
         
-        column(
-          width = 12,
-          
+        hr(),
         
-          
-          box(
-            title = "Perfect Competition",
-            width = 6,
-            solidHeader = TRUE,
-            status = "primary",
-            
-            plotlyOutput(
-              "baseline_sd"
-            ),
-            
-            hr(),
-            
-            tableOutput(
-              "baseline_table"
-            )
-            
-            
-          ),
-          
-          box(
-            title = "Perfect Competition with Intervention",
-            width = 6,
-            solidHeader = TRUE,
-            status = "primary",
-            plotlyOutput(
-              "complex_sd"
-            ),
-            
-            hr(),
-            
-            tableOutput(
-              "complex_table"
-            )
-          )
-        )
-        
-  
-        
-        
+        tableOutput("complex_table")
       )
     )
-  )
+    
+    
+    
+    
+  )))
 )
