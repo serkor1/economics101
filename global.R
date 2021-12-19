@@ -3,6 +3,7 @@ rm(list = ls()); gc()
 
 # Packages; ####
 library(shiny)
+library(shinyWidgets)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(tidyverse)

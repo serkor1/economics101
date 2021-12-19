@@ -1,6 +1,6 @@
 
 
-equilibrium_plot <- function(demand, supply, advanced = NULL) {
+equilibrium_plot <- function(demand, supply, advanced = NULL, hide_tick = FALSE) {
   
   # Store the functions as
   # data, with intervention if it exists
@@ -37,8 +37,9 @@ equilibrium_plot <- function(demand, supply, advanced = NULL) {
   # Equilibrium Segments
   # If there is an intervention variable
   # then that is the equilirium
-  condition <- colnames(plot_data) %>% 
+  condition <- colnames(plot_data) %>%
     str_detect(pattern = "y_intervention") %>% sum()
+  
   
   
   
@@ -83,27 +84,9 @@ equilibrium_plot <- function(demand, supply, advanced = NULL) {
           color = "gray"
         ),
         opacity = 0.7, showlegend = FALSE
-      ) %>% add_segments(
-        x = 0,
-        xend = intersections$imperfect_xint,
-        y = intersections$y_demand,
-        yend = intersections$y_demand,
-        line = list(
-          dash = "dot",
-          color = "gray"
-        ),
-        opacity = 0.7, showlegend = FALSE
-      ) %>% add_segments(
-        x = intersections$imperfect_xint,
-        xend = intersections$imperfect_xint,
-        y = 0,
-        yend = intersections$y_demand,
-        line = list(
-          dash = "dot",
-          color = "gray"
-        ),
-        opacity = 0.7, showlegend = FALSE
-      )
+      ) 
+    
+
     
     
     
@@ -139,6 +122,8 @@ equilibrium_plot <- function(demand, supply, advanced = NULL) {
   }
   
   
+  
+  
   if (advanced) {
     
     # Add Consumer, Producer and tax
@@ -167,7 +152,27 @@ equilibrium_plot <- function(demand, supply, advanced = NULL) {
         ymax = intersections$y_supply,
         ymin = ~y_initial,
         line = list(color="transparent")
-      ) 
+      ) %>% add_segments(
+        x = 0,
+        xend = intersections$imperfect_xint,
+        y = intersections$y_demand,
+        yend = intersections$y_demand,
+        line = list(
+          dash = "dot",
+          color = "gray"
+        ),
+        opacity = 0.7, showlegend = FALSE
+      ) %>% add_segments(
+        x = intersections$imperfect_xint,
+        xend = intersections$imperfect_xint,
+        y = 0,
+        yend = intersections$y_demand,
+        line = list(
+          dash = "dot",
+          color = "gray"
+        ),
+        opacity = 0.7, showlegend = FALSE
+      )
       
       
       
@@ -196,11 +201,13 @@ equilibrium_plot <- function(demand, supply, advanced = NULL) {
   return(
     base_plot %>% layout(
       xaxis = list(
-        title = "Quantity"
+        title = "Quantity",
+        showticklabels = isFALSE(hide_tick)
       ),
       yaxis = list(
         title = "Price",
-        range = c(0,30)
+        range = c(0,30),
+        showticklabels = isFALSE(hide_tick)
       )
     )
   )

@@ -14,31 +14,16 @@
 
 server <- function(input, output, session) {
   
-  
-  
-  
-  # Generate Demand and Supply Functions
+  # Generate Demand and Supply Functions; ####
   supply <- reactive({
     
-    shock <- NULL
-    
-    if (!is.null(input$side)) {
-      
-      if (input$side == "s_side"){
-        
-        shock = input$shock
-        
-        
-      }
-      
-    }
     
     linear_function(
-      shock = shock,
+      shock = input$shock_sup,
       coeff = as.numeric(input$supply_elasticity),
       type = "supply",
-      vat = as.numeric(input$unit_tax),
-      lump_sump = as.numeric(input$lumpsump_tax) 
+      vat = as.numeric(input$vat_sub),
+      lump_sump = as.numeric(input$unit_sub) 
     )
     
     
@@ -49,21 +34,10 @@ server <- function(input, output, session) {
   
   demand <- reactive({
     
-    shock <- NULL
     
-    if (!is.null(input$side)) {
-      
-      if (input$side == "d_side"){
-        
-        shock = input$shock
-        
-        
-      }
-      
-    }
     
     linear_function(
-      shock = shock,
+      shock = input$shock_dem,
       coeff = as.numeric(input$demand_elasticity),
       vat = as.numeric(input$unit_tax),
       lump_sump = as.numeric(input$lumpsump_tax),
@@ -75,28 +49,44 @@ server <- function(input, output, session) {
     
   })
   
+  # Generate Price Controls options based on the intersection; ####
+  intersection <- reactive({
+    
+    intersection_function(
+      demand = demand(),
+      supply = supply()
+    )$imperfect_yint
+    
+  })
   
   
   
   
   
-  # Baseline Plot
+  
+  
+  
+  
+  
+  # Baseline Plot; ####
   output$baseline_sd <- renderPlotly(
     equilibrium_plot(
         demand = linear_function(coeff = as.numeric(input$demand_elasticity),type = "demand"),
         supply = linear_function(coeff = as.numeric(input$supply_elasticity), type = "supply"),
-        advanced = input$is_adv
+        advanced = input$is_adv,
+        hide_tick = input$hide_value
       )
     )
   
-  
+  # Actual Plot; ####
   output$complex_sd <- renderPlotly({
     
 
     equilibrium_plot(
       demand = demand(),
       supply = supply(),
-      advanced = input$is_adv
+      advanced = input$is_adv,
+      hide_tick = input$hide_value
     )
     
   }
@@ -105,7 +95,7 @@ server <- function(input, output, session) {
   
   
   
-  
+  # Baseline Table; ####
   output$baseline_table <- renderTable({
 
     stat_table(
@@ -120,7 +110,7 @@ server <- function(input, output, session) {
   },width = "100%",bordered = TRUE, rownames = FALSE)
 
 
-
+  # Actual Table; ####
   output$complex_table <- renderTable({
 
     stat_table(

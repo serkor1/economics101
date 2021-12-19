@@ -26,7 +26,7 @@ linear_function <- function(shock = NULL, coeff = 2, vat = 0, lump_sump = 0, typ
     
   } else {
     
-    y_intervention <- y_initial
+    y_intervention <- ( coeff * (1-vat) ) * x - lump_sump
     
   }
   
@@ -37,14 +37,33 @@ linear_function <- function(shock = NULL, coeff = 2, vat = 0, lump_sump = 0, typ
   if (!is.null(shock)) {
     
     
-    if (shock == "pos") {
+    # If the shocks includes
+    # supply this will affect the supply side
+    
       
-      y_intervention = y_intervention + 5
+      if (sum(str_detect(shock, "pos"))){
+        
+        if (sum(str_detect(shock,"dem"))){
+          y_intervention <- y_intervention + 5
+        } else {
+          
+          y_intervention <- y_intervention - 5
+        }
+        
+        
+        
+      } else {
+        
+        if (sum(str_detect(shock,"dem"))){
+          y_intervention <- y_intervention - 5
+        } else {
+          
+          y_intervention <- y_intervention + 5
+        }
+        
+      }
       
-    } else {
-      
-      y_intervention = y_intervention - 5
-    }
+    
     
   }
   
@@ -90,5 +109,6 @@ linear_function <- function(shock = NULL, coeff = 2, vat = 0, lump_sump = 0, typ
   )
   
 }
+
 
 
