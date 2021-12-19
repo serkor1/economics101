@@ -17,6 +17,8 @@ server <- function(input, output, session) {
   # Generate Demand and Supply Functions; ####
   supply <- reactive({
     
+    message("Supply Function Activated!")
+    
     
     linear_function(
       shock = input$shock_sup,
