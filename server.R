@@ -36,6 +36,7 @@ server <- function(input, output, session) {
   
   demand <- reactive({
     
+    message("Demands Function Activated!")
     
     
     linear_function(
