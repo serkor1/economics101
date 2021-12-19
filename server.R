@@ -83,6 +83,8 @@ server <- function(input, output, session) {
   # Actual Plot; ####
   output$complex_sd <- renderPlotly({
     
+    message("Plotly Invoked")
+    
 
     equilibrium_plot(
       demand = demand(),
